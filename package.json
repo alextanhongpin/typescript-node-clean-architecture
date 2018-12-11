@@ -1,0 +1,28 @@
+{
+  "name": "clean-typescript",
+  "version": "1.0.0",
+  "description": "A better architecture for microservice.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/nodemon --watch 'src/**/*' -e ts,tsx --exec node_modules/.bin/ts-node ./src/index.ts"
+  },
+  "author": "alextanhongpin <alextan220990@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/koa": "^2.0.47",
+    "@types/koa-router": "^7.0.35",
+    "eslint": "^5.10.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "nodemon": "^1.18.8",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "koa": "^2.6.2",
+    "koa-body": "^4.0.4",
+    "koa-router": "^7.4.0"
+  }
+}

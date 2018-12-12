@@ -101,3 +101,36 @@ const getSumEndpointBuilder = function builder (db) {
 
 module.exports = getSumEndpointBuilder
 ```
+
+## Synchronous Decorator
+
+```js
+function validate(request) {
+    const {a,b} = request
+    if (!a || !b) {
+        throw new Error('missing fields')
+    }
+    console.log('validated')
+    return request
+}
+
+function multiply(request) {
+	const {a,b} = request
+    console.log('multiplied')
+    return {
+  	    a: a * 10,
+        b: b * 10
+    }
+}
+
+function decorator(value, ...fns) {
+    return fns.reduce((acc, fn) => fn(acc), value)
+}
+
+const request = {
+    a: 1,
+    b: 2
+}
+
+console.log('response is:', decorator(request, validate, multiply))
+```

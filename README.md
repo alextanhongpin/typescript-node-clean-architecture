@@ -38,7 +38,7 @@ function endpointBuilder({
         params: req.params,
         query: req.query
       })
-      const response = await service(ctx, decorator(request, middlewares))
+      const response = await service(ctx, decorator(request, ...middlewares))
       res.status(statusCode()).json(responseParser(response))
     } catch (error) {
       return res.status(400).json({

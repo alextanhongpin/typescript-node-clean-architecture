@@ -59,9 +59,16 @@ function parseResponse (response) {
 function buildSumService(repo) {
   async function sumService ({a, b}) {
     const response = a + b
-    await repo.save(response)
+    await repo(a, b, response)
     return response
   }
+}
+
+function repositoryBuilder (db) {
+    return async function repository (a, b, sum) {
+        const [result] = await db.query('INSERT INTO sum (a, b, sum) VALUES (?, ?, ?)', [a, b, sum])
+        return result.insertId
+    }
 }
 
 function validate(request) {
@@ -82,11 +89,11 @@ function isDefined (a) {
   return a !== null && a !== undefined
 }
 
-const getSumEndpointBuilder = function build (repo) {
+const getSumEndpointBuilder = function builder (db) {
   return endpointBuilder({
       parseRequest,
       statusCode:() => 200,
-      service: sumService(repo),
+      service: sumService(repositoryBuilder(db)),
       parseResponse,
       middlewares: [ validate ]
   })

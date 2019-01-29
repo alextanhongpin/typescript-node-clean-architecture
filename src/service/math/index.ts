@@ -3,7 +3,6 @@ import Router from 'koa-router';
 
 export function endpoint(app: Koa) {
   const router = new Router();
-
   router.get('/sum', getMathBuilder(sum));
   router.get('/error', async function(_ctx: Koa.Context) {
     throw new Error('invalid request');

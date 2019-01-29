@@ -41,8 +41,9 @@ async function main(): Promise<void> {
 main().catch(console.error);
 
 async function requestId(ctx: Context, next: () => Promise<any>) {
+  // Passing data through koa context.
   ctx.locals = ctx.locals || {};
-  ctx.locals.id = uuid();
+  ctx.locals.id = ctx.get('X-Request-ID') || uuid();
   ctx.set('X-Request-ID', ctx.locals.id);
   await next();
 }

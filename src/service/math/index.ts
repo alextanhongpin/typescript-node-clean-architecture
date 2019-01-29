@@ -1,8 +1,9 @@
 import Koa from 'koa';
 import Router from 'koa-router';
 
-export function endpoint(app: Koa) {
+export default function endpoint(app: Koa, _authorized: Router.IMiddleware) {
   const router = new Router();
+  // router.use(authorized);
   router.get('/sum', getMathBuilder(sum));
   router.get('/error', async function(_ctx: Koa.Context) {
     throw new Error('invalid request');

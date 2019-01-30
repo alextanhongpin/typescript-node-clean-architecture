@@ -8,25 +8,28 @@ export interface Option {
   signer: Signer;
 }
 
-export default function createRouter({
+export default function serviceFactory({
   credential,
   signer,
-}: Option): Router {
-  const service = Service(credential, signer);
-  const controller = Controller(service);
-
-  const router = new Router({
-    prefix: '/v1/ops',
-  });
-
-  router.post(
-    '/authorize',
-    AuthMiddleware(signer),
-    ScopeMiddleware('ops'),
-    controller.postAuthorize,
-  );
-  router.post('/register', controller.postRegister);
-  return router;
+}: Option) {
+	return Object.freeze({
+		createRouter(): Router {
+			const service = Service(credential, signer);
+			const controller = Controller(service);
+			const router = new Router({
+				prefix: '/v1/ops',
+			});
+			router.post(
+				'/authorize',
+				AuthMiddleware(signer),
+				ScopeMiddleware('ops'),
+				controller.postAuthorize,
+			);
+			router.post('/register', controller.postRegister);
+			router.get('/health', controller.getHealth);
+			return router;
+		}
+	})
 }
 
 

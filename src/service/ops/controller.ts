@@ -1,4 +1,5 @@
 import Koa from 'koa'
+import _ from 'koa-body'
 import { IService, IController } from './interface'
 
 export default function Controller(service: IService): IController {
@@ -11,9 +12,14 @@ export default function Controller(service: IService): IController {
     ctx.body = { success: true };
   }
 
+  function getHealth(ctx: Koa.Context) {
+    ctx.body = { success: true };
+  }
+
   return Object.freeze({
     postRegister,
     postAuthorize,
+		getHealth
   });
 }
 

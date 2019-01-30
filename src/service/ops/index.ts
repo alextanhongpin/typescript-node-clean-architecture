@@ -12,24 +12,26 @@ export interface Option {
 }
 
 export default function createService({
-  app,
   config,
   signer,
   requireAuthorization,
   scopeMiddleware,
-}: Option) {
+}: Option): Router {
+  const service = Service(config.credential, signer);
+  const controller = Controller(service);
+
   const router = new Router({
     prefix: '/v1/ops',
   });
 
-  const service = Service(config.credential, signer);
-  const controller = Controller(service);
-
-  router.use('/authorize', requireAuthorization, scopeMiddleware('ops'));
-  router.post('/authorize', controller.postAuthorize);
+  router.post(
+    '/authorize',
+    requireAuthorization,
+    scopeMiddleware('ops'),
+    controller.postAuthorize,
+  );
   router.post('/register', controller.postRegister);
-
-  app.use(router.routes()).use(router.allowedMethods());
+  return router;
 }
 
 export interface RegisterRequest {

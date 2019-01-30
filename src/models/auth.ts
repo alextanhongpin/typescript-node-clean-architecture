@@ -2,7 +2,7 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { HttpError } from './error';
+import { HttpStatusUnauthorized } from './error';
 
 const internal = new WeakMap();
 
@@ -49,18 +49,18 @@ export function AuthMiddleware(signer: Signer): Router.IMiddleware {
     const [bearer, token] = authorization.split(' ');
 
     if (bearer !== 'Bearer') {
-      throw new HttpError('invalid authorization header', 401);
+      throw HttpStatusUnauthorized('invalid authorization header');
     }
 
     if (!token) {
-      throw new HttpError('invalid access token', 401);
+      throw HttpStatusUnauthorized('invalid access token');
     }
     try {
       const user = await signer.verify(token);
       ctx.locals.user = user;
       await next();
     } catch (err) {
-      throw new HttpError(err.message, 401);
+      throw HttpStatusUnauthorized(err.message);
     }
   };
 }
@@ -72,10 +72,10 @@ export function ScopeMiddleware(...scopes: string[]): Router.IMiddleware {
   ) {
     const scope = ctx.locals.user && ctx.locals.user.scope;
     if (!scope) {
-      throw new Error(`scope "${scope}" is invalid`);
+      throw HttpStatusUnauthorized(`scope "${scope}" is invalid`);
     }
     if (!scopes.includes(scope)) {
-      throw new Error(`scope "${scope}" is invalid`);
+      throw HttpStatusUnauthorized(`scope "${scope}" is invalid`);
     }
     await next();
   };

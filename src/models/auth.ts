@@ -4,20 +4,13 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { HttpStatusUnauthorized } from './error';
 
-const internal = new WeakMap();
-
 export interface Signer {
   sign(obj: any, duration?: string): Promise<string>;
   verify(token: string): Promise<any>;
 }
 
-class Auth {
-  constructor(secret: string) {
-    internal.set(this, { secret });
-  }
-
-  sign(obj: any, duration = '1h'): Promise<string> {
-    const { secret } = internal.get(this);
+export default function Auth(secret: string) {
+  async function sign(obj: any, duration = '1h'): Promise<string> {
     return new Promise((resolve, reject) => {
       jwt.sign(
         obj,
@@ -30,14 +23,18 @@ class Auth {
     });
   }
 
-  verify(token: string): Promise<any> {
-    const { secret } = internal.get(this);
+  async function verify(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, secret, (err: Error, decoded: any) => {
         err ? reject(err) : resolve(decoded);
       });
     });
   }
+
+	return Object.freeze({
+		sign,
+		verify
+	})
 }
 
 export function AuthMiddleware(signer: Signer): Router.IMiddleware {
@@ -89,7 +86,3 @@ export function sha256(ciphertext: string): string {
     .digest('hex');
 }
 
-export default (secret: string): Signer => {
-  const auth = new Auth(secret);
-  return Object.freeze(auth);
-};

@@ -31,10 +31,10 @@ export default function Auth(secret: string) {
     });
   }
 
-	return Object.freeze({
-		sign,
-		verify
-	})
+  return Object.freeze({
+    sign,
+    verify,
+  });
 }
 
 export function AuthMiddleware(signer: Signer): Router.IMiddleware {
@@ -85,4 +85,3 @@ export function sha256(ciphertext: string): string {
     .update(ciphertext, 'utf8')
     .digest('hex');
 }
-

@@ -1,7 +1,10 @@
-import { Context } from 'koa';
+import Koa from 'koa';
 import uuid from 'uuid/v4';
 
-const requestId = async (ctx: Context, next: Next) => {
+export const requestIdProvider = async (
+  ctx: Koa.Context,
+  next: () => Promise<any>,
+) => {
   // Passing data through koa context.
   ctx.locals = ctx.locals || {};
   ctx.locals.id = ctx.get('X-Request-ID') || uuid();
@@ -9,4 +12,4 @@ const requestId = async (ctx: Context, next: Next) => {
   await next();
 };
 
-export default requestId;
+export type requestIdProvider = ReturnType<typeof requestIdProvider>;

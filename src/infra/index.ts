@@ -3,28 +3,20 @@ import Koa, { Context } from 'koa';
 import Router from 'koa-router';
 import koaBody from 'koa-body';
 
-import Config, { IConfig } from './config';
+import { Config } from './config';
 
-import requestId from '../middleware/request-id';
-import gracefulShutdown from '../middleware/graceful-shutdown';
+import { requestIdProvider } from '../middleware/request-id-provider';
+import gracefulShutdown from '../module/graceful-shutdown';
 
-import Auth, { Signer } from '../models/auth';
-import { ErrorMiddleware } from '../models/error';
+import { Signer } from '../module/signer';
+import { errorHandler } from '../middleware/error-handler';
 
-export interface IInfra {
-  createApp(): Koa;
-  createServer(app: Koa): http.Server;
-  createConfig(): IConfig;
-  createSigner(): Signer;
-  serveRoutes(app: Koa): (...routers: Router[]) => void;
-}
-
-class Infra {
-  createApp(): Koa {
+export function Infra() {
+  function createApp(): Koa {
     const app = new Koa(); // This must be the first middleware.
-    app.use(ErrorMiddleware());
+    app.use(errorHandler());
     app.use(koaBody());
-    app.use(requestId);
+    app.use(requestIdProvider);
 
     app.on('error', (err: Error, _ctx: Context) => {
       // Log requests and errors.
@@ -33,29 +25,36 @@ class Infra {
     return app;
   }
 
-  createServer(app: Koa): http.Server {
+  function createServer(app: Koa): http.Server {
     const server: http.Server = http.createServer(app.callback());
     // Register graceful shutdown.
     gracefulShutdown(server);
     return server;
   }
 
-  createConfig(): IConfig {
+  function createConfig(): Config {
     return Config();
   }
 
-  createSigner(): Signer {
-    const { secret } = this.createConfig();
-    return Auth(secret);
+  function createSigner(): Signer {
+    const { secret } = createConfig();
+    return Signer(secret);
   }
 
-  serveRoutes(app: Koa) {
+  function serveRoutes(app: Koa) {
     return (...routers: Router[]) => {
       for (let router of routers) {
         app.use(router.routes()).use(router.allowedMethods());
       }
     };
   }
+  return Object.freeze({
+    createApp,
+    createServer,
+    createConfig,
+    createSigner,
+    serveRoutes,
+  });
 }
 
-export default () => new Infra();
+export type Infra = ReturnType<typeof Infra>;

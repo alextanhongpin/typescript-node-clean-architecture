@@ -1,21 +1,7 @@
 import Koa from 'koa';
 
-export class HttpError extends Error {
-  constructor(props: any, public status = 400) {
-    super(props);
-  }
-}
-
-export function HttpStatusUnauthorized(message: string): HttpError {
-  return new HttpError(message, 401);
-}
-
-export function HttpStatusBadRequest(message: string): HttpError {
-  return new HttpError(message);
-}
-
-export function ErrorMiddleware(): Koa.Middleware {
-  return async function(ctx: Koa.Context, next: Next) {
+export function errorHandler(): Koa.Middleware {
+  return async function(ctx: Koa.Context, next: () => Promise<any>) {
     try {
       await next();
     } catch (err) {
@@ -31,3 +17,5 @@ export function ErrorMiddleware(): Koa.Middleware {
     }
   };
 }
+
+export type errorHandler = ReturnType<typeof errorHandler>;

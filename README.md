@@ -147,3 +147,28 @@ const request = {
 }
 console.log('response is:', decorator(request, validate, multiply))
 ```
+
+
+## Simplify Type
+
+```ts
+// We don't need to declare an interface here, use a type with declaration merging instead.
+export interface IConfig {
+	host: string;
+	port: number;
+	secret: string;
+	credential: string;
+}
+
+export const Config = () => {
+  return {
+    host: process.env.HOST || 'localhost',
+    port: Number(process.env.PORT || 4040),
+    secret: process.env.SECRET || 'secret',
+    credential: process.env.CREDENTIAL || 'hashed credentials',
+  };
+};
+
+// Now Config is both a type and function.
+export type Config = ReturnType<typeof Config>;
+```

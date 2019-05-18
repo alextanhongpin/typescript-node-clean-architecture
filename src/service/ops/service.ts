@@ -1,9 +1,10 @@
-import { Signer, sha256 } from '../../models/auth';
-import { HttpStatusUnauthorized } from '../../models/error';
+import { sha256 } from '../../module/crypto';
+import { Signer } from '../../module/signer';
+import { HttpStatusUnauthorized } from '../../module/http';
 import { RegisterRequest, RegisterResponse } from './interface';
 
 // If the service is a class, it can extend the EventEmitter.
-export default function Service(credential: string, signer: Signer) {
+export function Service(credential: string, signer: Signer) {
   async function register({
     username,
     password,
@@ -21,3 +22,5 @@ export default function Service(credential: string, signer: Signer) {
     register,
   });
 }
+
+export type Service = ReturnType<typeof Service>;

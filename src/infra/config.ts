@@ -1,11 +1,4 @@
-export interface IConfig {
-  host: string;
-  port: number;
-  secret: string;
-  credential: string;
-}
-
-const Config = (): IConfig => {
+export const Config = () => {
   return {
     host: process.env.HOST || 'localhost',
     port: Number(process.env.PORT || 4040),
@@ -14,4 +7,4 @@ const Config = (): IConfig => {
   };
 };
 
-export default Config;
+export type Config = ReturnType<typeof Config>;

@@ -1,8 +1,11 @@
-import { AuthMiddleware } from './models/auth';
 import _ from './globals';
+
+import { Infra } from './infra';
+
+import { authorizer } from './middleware/authorizer';
+
 import opsService from './service/ops';
 import mathService from './service/math';
-import Infra from './infra';
 
 async function main(): Promise<void> {
   const infra = Infra();
@@ -13,7 +16,7 @@ async function main(): Promise<void> {
   const server = infra.createServer(app);
   const signer = infra.createSigner();
 
-  mathService(app, AuthMiddleware(signer));
+  mathService(app, authorizer(signer));
   const opsRouter = opsService({ credential, signer }).createRouter();
 
   infra.serveRoutes(app)(opsRouter);

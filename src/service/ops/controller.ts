@@ -1,8 +1,8 @@
 import Koa from 'koa';
 import _ from 'koa-body';
-import { IService, IController } from './interface';
+import { Service } from './service';
 
-export default function Controller(service: IService): IController {
+export function Controller(service: Service) {
   async function postRegister(ctx: Koa.Context) {
     const { username, password } = ctx.request.body;
     // Errors will be captured!
@@ -23,3 +23,5 @@ export default function Controller(service: IService): IController {
     getHealth,
   });
 }
+
+export type Controller = ReturnType<typeof Controller>;

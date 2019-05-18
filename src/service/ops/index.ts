@@ -1,7 +1,10 @@
 import Router from 'koa-router';
-import { Signer, ScopeMiddleware, AuthMiddleware } from '../../models/auth';
-import Service from './service';
-import Controller from './controller';
+import { Signer } from '../../module/signer';
+import { authorizer } from '../../middleware/authorizer';
+import { scopeChecker } from '../../middleware/scope-checker';
+
+import { Service } from './service';
+import { Controller } from './controller';
 
 export interface Option {
   credential: string;
@@ -18,8 +21,8 @@ export default function serviceFactory({ credential, signer }: Option) {
       });
       router.post(
         '/authorize',
-        AuthMiddleware(signer),
-        ScopeMiddleware('ops'),
+        authorizer(signer),
+        scopeChecker('ops'),
         controller.postAuthorize,
       );
       router.post('/register', controller.postRegister);
